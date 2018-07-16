@@ -1,0 +1,150 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="/static/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<script src="/static/jquery-3.2.1.js"></script>
+		<script src="/static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+		<script src="/static/vue.min.js"></script>
+	</head>
+
+	<body>
+
+		<div id="wholediv">
+
+			<div class="container" style="margin-top:30px;">
+		
+				<div class="row">
+			
+					<div class="col-xs-3 col-md-3 col-lg-3">
+			
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title"><span class="glyphicon glyphicon-tags"> 回文</span></h3>
+							</div>
+							<div class="panel-body">
+								{% raw %}
+								  <ul class="list-group">
+									<a href="#" class="list-group-item" v-for="site,index in pdata" @click="get_p(index)">
+									  {{ site[0] }}
+									</a>
+								  </ul>
+								{% endraw %}
+							</div>
+						</div>
+					</div>
+		
+					<div class="col-xs-9 col-md-9 col-lg-9">
+					
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title"><span class="glyphicon glyphicon-tags"> 显示</span></h3>
+							</div>
+							<div class="panel-body">
+								<p style="word-wrap:break-word;">
+									{% raw %}
+									<font size="4" v-for="(i,index) in newsequence" :style="{'background-color':plist.indexOf(index+1) !== -1? '#FFD306' : ''}">{{ i }}</font>
+									{% endraw %}
+								</p>
+							</div>
+						</div>
+						
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title"><span class="glyphicon glyphicon-tags"> 面板</span></h3>
+							</div>
+							<div class="panel-body">
+								<form role="form">
+									<div class="form-group">
+									
+										<div class="row">
+				
+										<div class="col-sm-12">
+											<textarea class="form-control" rows="4" cols="100" v-model="sequence"> 
+											</textarea>
+										</div>
+											
+										</div>
+										<br>
+										<div class="row">
+							
+										<label class="col-sm-2 control-label">最小匹配</label>
+										<div class="col-sm-1">
+											<input v-model.number="minlen" style="width:100%;">
+										</div>
+									
+										<label class="col-sm-2 control-label">最大匹配</label>
+										<div class="col-sm-1">
+											<input v-model.number="maxlen" style="width:100%;">
+										</div>
+									
+										<label class="col-sm-2 control-label">最小gap</label>
+										<div class="col-sm-1">
+											<input v-model.number="mingap" style="width:100%;">
+										</div>
+								
+										<label class="col-sm-2 control-label">最大gap</label>
+										<div class="col-sm-1">
+											<input v-model.number="maxgap" style="width:100%;">
+										</div>
+														
+										</div>
+										<br>
+										<div class="row">
+							
+										<label class="col-sm-2 control-label">错配阈值</label>
+										<div class="col-sm-2">
+											<input v-model.number="threshold" style="width:100%;">
+										</div>
+							
+										<div class="col-sm-8">
+											<input type="button" value="预测" class="btn btn-default btn-lg btn-block pull-right" @click='predict'>
+										</div>
+										
+										</div>
+
+									</div>
+								</form>
+							</div>
+						</div>
+						
+					</div>
+			
+				</div>
+			
+			</div>
+		
+		</div>
+
+	<script>
+	var wholediv_vue = new Vue({
+		el: '#wholediv',
+		data: {
+			sequence: '',
+			minlen: '3',
+			maxlen: '6',
+			mingap: '0',
+			maxgap: '6',
+			threshold: '0',
+			plist: [],
+			newsequence: '',
+			pdata: '',
+		},
+		methods: {
+			predict: function(){
+				this.newsequence = this.sequence
+				var self = this
+				$.post('ajaxdata', {'sequence':this.sequence,'minlen':this.minlen,'maxlen':this.maxlen,'mingap':this.mingap,'maxgap':this.maxgap,'threshold':this.threshold}, function (res) {
+					self.pdata = res.data;
+				}, 'json')
+			},
+			get_p: function(index){
+				this.plist = this.pdata[index][1]
+			},
+		}
+	})
+
+	</script>
+
+	</body>
+
+</html>
